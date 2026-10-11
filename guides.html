@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Guides | Niseko Cluster</title>
+<style>
+  :root { --bg: #ffffff; --overlay: rgba(12,113,195,0.5); --backdrop: rgba(0,0,0,0.88); }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); font-family: system-ui, -apple-system, "Segoe UI", sans-serif; }
+
+  .nc-guides { width: 95%; margin: 0 auto; padding: 10px 0; }
+  .nc-guides__grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5.5%; row-gap: 30px; align-items: start; }
+  @media (max-width: 767px) { .nc-guides__grid { grid-template-columns: 1fr; } }
+
+  .nc-guides__item { position: relative; display: block; cursor: zoom-in; border: 0; padding: 0; background: none; width: 100%; }
+  .nc-guides__item img { display: block; width: 100%; height: auto; }
+  .nc-guides__item::after { content: ""; position: absolute; inset: 0; background: var(--overlay); opacity: 0; transition: opacity .25s; }
+  .nc-guides__item:hover::after, .nc-guides__item:focus-visible::after { opacity: 1; }
+
+  .nc-lightbox { position: fixed; inset: 0; background: var(--backdrop); display: none; align-items: center; justify-content: center; z-index: 9999; padding: 40px 16px; }
+  .nc-lightbox.is-open { display: flex; }
+  .nc-lightbox img { max-width: 100%; max-height: 100%; object-fit: contain; cursor: zoom-out; }
+  .nc-lightbox button { position: absolute; background: none; border: 0; color: #fff; font-size: 40px; line-height: 1; cursor: pointer; padding: 8px 14px; opacity: .8; }
+  .nc-lightbox button:hover { opacity: 1; }
+  .nc-lightbox__close { top: 6px; right: 6px; }
+  .nc-lightbox__prev { left: 4px; top: 50%; transform: translateY(-50%); }
+  .nc-lightbox__next { right: 4px; top: 50%; transform: translateY(-50%); }
+</style>
+</head>
+<body>
+
+<section class="nc-guides">
+  <div class="nc-guides__grid">
+    <button class="nc-guides__item" data-full="images/Deluxe-Room-Light-Switches-2.jpg">
+      <img src="images/Deluxe-Room-Light-Switches-2-980.jpg" width="980" height="693" alt="Deluxe room light switches guide (part 1)">
+    </button>
+    <button class="nc-guides__item" data-full="images/Deluxe-Room-Light-Switches-1.jpg">
+      <img src="images/Deluxe-Room-Light-Switches-1-980.jpg" width="980" height="693" loading="lazy" alt="Deluxe room light switches guide (part 2)">
+    </button>
+    <button class="nc-guides__item" data-full="images/room-air1.jpg">
+      <img src="images/room-air1-980.jpg" width="980" height="859" loading="lazy" alt="Room air conditioning: temperature control on the wall thermostat">
+    </button>
+    <button class="nc-guides__item" data-full="images/room-air2.jpg">
+      <img src="images/room-air2-980.jpg" width="980" height="542" loading="lazy" alt="Room air conditioning: airflow control on the bedside panel">
+    </button>
+  </div>
+</section>
+
+<div class="nc-lightbox" role="dialog" aria-modal="true" aria-label="Image viewer">
+  <button class="nc-lightbox__close" aria-label="Close">&times;</button>
+  <button class="nc-lightbox__prev" aria-label="Previous">&#8249;</button>
+  <img alt="">
+  <button class="nc-lightbox__next" aria-label="Next">&#8250;</button>
+</div>
+
+<script>
+(function () {
+  var items = Array.prototype.slice.call(document.querySelectorAll('.nc-guides__item'));
+  var box = document.querySelector('.nc-lightbox');
+  var img = box.querySelector('img');
+  var current = 0;
+
+  function show(i) {
+    current = (i + items.length) % items.length;
+    img.src = items[current].dataset.full;
+    img.alt = items[current].querySelector('img').alt;
+  }
+  function open(i) { show(i); box.classList.add('is-open'); document.body.style.overflow = 'hidden'; }
+  function close() { box.classList.remove('is-open'); document.body.style.overflow = ''; items[current].focus(); }
+
+  items.forEach(function (el, i) { el.addEventListener('click', function () { open(i); }); });
+  box.querySelector('.nc-lightbox__close').addEventListener('click', close);
+  box.querySelector('.nc-lightbox__prev').addEventListener('click', function (e) { e.stopPropagation(); show(current - 1); });
+  box.querySelector('.nc-lightbox__next').addEventListener('click', function (e) { e.stopPropagation(); show(current + 1); });
+  box.addEventListener('click', function (e) { if (e.target === box || e.target === img) close(); });
+  document.addEventListener('keydown', function (e) {
+    if (!box.classList.contains('is-open')) return;
+    if (e.key === 'Escape') close();
+    if (e.key === 'ArrowLeft') show(current - 1);
+    if (e.key === 'ArrowRight') show(current + 1);
+  });
+})();
+</script>
+</body>
+</html>
