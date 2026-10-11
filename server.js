@@ -74,7 +74,8 @@ const PAGES = {
   "/hh":     "hh.html",
   "/non-hh": "non-hh.html",
   "/nonhh":  "non-hh.html",
-  "/jtb":    "jtb.html"
+  "/jtb":    "jtb.html",
+  "/guides": "guides.html"
 };
 
 const TYPES = {
@@ -217,6 +218,12 @@ const server = http.createServer((req, res) => {
   }
 
   /* ---- static pages ---- */
+  // "/guides/" -> "/guides", so relative image paths keep resolving
+  if (pathname.length > 1 && pathname.endsWith("/") && PAGES[pathname.slice(0, -1)]) {
+    res.writeHead(301, { Location: pathname.slice(0, -1) });
+    return res.end();
+  }
+
   const file = PAGES[pathname] || pathname.replace(/^\/+/, "");
   const safe = path.normalize(file).replace(/^(\.\.[/\\])+/, "");
   const full = path.join(__dirname, safe);
