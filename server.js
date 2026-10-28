@@ -10,7 +10,8 @@
      DATA_DIR         where content.json lives. Set this to your
                       volume mount path so edits survive redeploys.
      ADMIN_USER       login username (default: admin)
-     ADMIN_PASSWORD   login password (default: niseko2026 — change this)
+     ADMIN_PASSWORD   login password (required — the server will not
+                      start without it)
    ============================================================= */
 
 const http   = require("http");
@@ -23,8 +24,8 @@ const DATA_DIR  = process.env.DATA_DIR || path.join(__dirname, "data");
 const DATA_FILE = path.join(DATA_DIR, "content.json");
 
 const ADMIN_USER = process.env.ADMIN_USER || "admin";
-const ADMIN_PASS = process.env.ADMIN_PASSWORD || "niseko2026";
-const USING_DEFAULT_PASSWORD = !process.env.ADMIN_PASSWORD;
+const ADMIN_PASS = process.env.ADMIN_PASSWORD;
+if (!ADMIN_PASS) throw new Error("Missing env var: ADMIN_PASSWORD");
 
 const MAX_BODY        = 2 * 1024 * 1024; // 2 MB
 const SESSION_COOKIE   = "hnv_session";
@@ -256,5 +257,5 @@ server.listen(PORT, () => {
     console.log("  WARNING: DATA_DIR is not set. Edits will be lost on redeploy.");
     console.log("           Add a volume in Railway and set DATA_DIR to its mount path.");
   }
-  console.log("  admin login: " + ADMIN_USER + " / " + (USING_DEFAULT_PASSWORD ? ADMIN_PASS + "  (default — set ADMIN_PASSWORD)" : "(custom password set)"));
+  console.log("  admin login: " + ADMIN_USER + " / (password from ADMIN_PASSWORD)");
 });
